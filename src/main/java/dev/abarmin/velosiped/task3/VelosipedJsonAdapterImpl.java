@@ -30,12 +30,20 @@ public class VelosipedJsonAdapterImpl implements VelosipedJsonAdapter{
                     }
                     field.setAccessible(true);
                     try {
-                        field.set(instance, Integer.parseInt(fieldValue)); // quick hack
+                        field.set(instance, mapValue(field.getType(), fieldValue)); // quick hack
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
                 });
         return instance;
+    }
+
+    private Object mapValue(Class<?> valueClass, String value) {
+        if (valueClass.equals(int.class)) {
+            return Integer.parseInt(value);
+        } else {
+            throw new RuntimeException("Unsupported class");
+        }
     }
 
     @Override
@@ -54,7 +62,7 @@ public class VelosipedJsonAdapterImpl implements VelosipedJsonAdapter{
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
-                    fieldStr.append("\"" + field.getName() + "\"");
+                    fieldStr.append("\"").append(field.getName()).append("\"");
                     fieldStr.append(":");
                     fieldStr.append(value);
                     return fieldStr;
